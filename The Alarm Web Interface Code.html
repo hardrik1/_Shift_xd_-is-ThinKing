@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ESP32 Luxury Smart Alarm Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #1f1c2c, #928dab);
+      color: #f8f8f8;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    header {
+      width: 100%;
+      padding: 20px;
+      text-align: center;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(10px);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.5em;
+      color: #ffffff;
+    }
+    main {
+      width: 90%;
+      max-width: 800px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      backdrop-filter: blur(15px);
+      margin-top: 20px;
+    }
+    label, h2, h3 {
+      color: #fff;
+      margin-bottom: 10px;
+    }
+    input[type="time"], button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1em;
+    }
+    input[type="time"] {
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+    }
+    button {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+      transition: all 0.3s ease;
+    }
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    #status, #sleepQuality {
+      text-align: center;
+      margin-top: 20px;
+      font-weight: 600;
+      color: #ffd700;
+      font-size: 1.2em;
+    }
+    .sleep-stats {
+      background: rgba(255,255,255,0.15);
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🌟 ESP32 Luxury Smart Alarm</h1>
+  </header>
+  <main>
+    <h2>Alarm Settings</h2>
+    <form action="/save" method="POST">
+      <label for="alarmTime">Set Alarm Time:</label>
+      <input type="time" id="alarmTime" name="alarmTime" value="07:00">
+      <button type="submit">Save Alarm</button>
+    </form>
+
+    <h2>Premium Tools & Games</h2>
+    <button onclick="fetch('/startGame')">🎯 Red Light Green Light</button>
+    <button onclick="fetch('/mindfulness')">🧘 Start Mindfulness Mode</button>
+    <button onclick="checkStatus()">🔄 Check Game Status</button>
+    <p id="status">Game not running</p>
+
+    <h3>🛌 Sleep Tracking</h3>
+    <div class="sleep-stats">
+      <p>Total Sleep Duration: <span id="sleepDuration">--</span></p>
+      <p>Sleep Quality: <span id="sleepQuality">Analyzing...</span></p>
+      <button onclick="refreshSleepStats()">🔄 Refresh Sleep Data</button>
+    </div>
+  </main>
+  <script>
+    function checkStatus() {
+      fetch('/status')
+        .then(response => response.text())
+        .then(text => {
+          document.getElementById('status').innerText = text;
+        });
+    }
+    function refreshSleepStats() {
+      fetch('/sleepData')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('sleepDuration').innerText = data.duration;
+          document.getElementById('sleepQuality').innerText = data.quality;
+        });
+    }
+  </script>
+</body>
+</html>
