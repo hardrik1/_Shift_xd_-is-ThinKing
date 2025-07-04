@@ -3,187 +3,199 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ESP32 Smart Alarm</title>
+  <title>ESP32 Smart Alarm Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
       --primary: #007aff;
-      --background: rgba(255, 255, 255, 0.1);
-      --glass: rgba(255, 255, 255, 0.2);
+      --background-light: #f0f0f0;
+      --background-dark: #1e1e1e;
+      --glass-light: rgba(255, 255, 255, 0.8);
+      --glass-dark: rgba(30, 30, 30, 0.8);
       --shadow: rgba(0, 0, 0, 0.2);
+      --text-light: #000;
+      --text-dark: #fff;
     }
     body {
       font-family: 'SF Pro Display', sans-serif;
-      background: linear-gradient(135deg, #111, #333);
-      color: #fff;
+      background-color: var(--background-light);
+      color: var(--text-light);
       margin: 0;
       display: flex;
       flex-direction: column;
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+    header {
+      background: var(--glass-light);
+      backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: space-between;
       align-items: center;
-      height: 100vh;
-      overflow-x: hidden;
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 10px var(--shadow);
     }
-    .login, .dashboard {
-      width: 90%;
-      max-width: 500px;
-      background: var(--glass);
-      border-radius: 15px;
-      padding: 30px;
-      margin-top: 50px;
-      box-shadow: 0 8px 32px var(--shadow);
-      backdrop-filter: blur(20px);
+    header h1 {
+      margin: 0;
+      font-weight: 600;
+      color: var(--primary);
+    }
+    nav {
+      display: flex;
+      gap: 1rem;
+    }
+    nav a {
+      text-decoration: none;
+      color: var(--text-light);
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      transition: background 0.2s, transform 0.2s;
+    }
+    nav a:hover {
+      background: var(--primary);
+      color: #fff;
+      transform: scale(1.05);
+    }
+    .container {
+      flex: 1;
+      padding: 2rem;
       display: none;
-      animation: fadeIn 1s forwards;
+      animation: fadeIn 0.5s forwards;
     }
-    .login.active, .dashboard.active {
+    .container.active {
       display: block;
     }
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    input, button {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      margin-top: 10px;
-      font-size: 1em;
-    }
-    input {
-      background: rgba(255, 255, 255, 0.2);
-      color: #fff;
+    .card {
+      background: var(--glass-light);
+      backdrop-filter: blur(20px);
+      border-radius: 15px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 20px var(--shadow);
+      margin-bottom: 2rem;
     }
     button {
       background: var(--primary);
       color: #fff;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-size: 1rem;
       cursor: pointer;
       transition: transform 0.2s, box-shadow 0.2s;
     }
     button:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 20px var(--shadow);
+      box-shadow: 0 6px 20px var(--shadow);
     }
     canvas {
-      margin-top: 20px;
-      background: rgba(0,0,0,0.2);
-      border-radius: 10px;
+      margin-top: 1rem;
     }
-    .section {
-      margin-top: 30px;
+    .dark-mode {
+      background-color: var(--background-dark);
+      color: var(--text-dark);
+    }
+    .dark-mode header, .dark-mode .card {
+      background: var(--glass-dark);
     }
     @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.9); }
-      to { opacity: 1; transform: scale(1); }
+      from {opacity: 0; transform: translateY(10px);}
+      to {opacity: 1; transform: translateY(0);}
     }
   </style>
 </head>
 <body>
-  <div class="login" id="loginScreen">
-    <h1>Sign In</h1>
-    <input type="text" id="username" placeholder="Username" />
-    <input type="password" id="password" placeholder="Password" />
-    <button onclick="login()">Login</button>
+  <header>
+    <h1>ESP32 Smart Alarm</h1>
+    <nav>
+      <a href="#" onclick="showPage('home')">Home</a>
+      <a href="#" onclick="showPage('sleep')">Sleep Analytics</a>
+      <a href="#" onclick="showPage('alarm')">Alarm</a>
+      <a href="#" onclick="showPage('games')">Games</a>
+      <a href="#" onclick="showPage('settings')">Settings</a>
+    </nav>
+  </header>
+
+  <!-- Home -->
+  <div id="home" class="container active">
+    <div class="card">
+      <h2>Welcome</h2>
+      <p>This is your ESP32 Smart Alarm Dashboard. Navigate using the menu to manage alarms, view analytics, or play games.</p>
+    </div>
   </div>
 
-  <div class="dashboard" id="dashboardScreen">
-    <h1>ESP32 Smart Alarm</h1>
-    <div class="section">
-      <h2>⏰ Set Alarm</h2>
-      <input type="time" id="alarmTime" value="07:00" />
+  <!-- Sleep Analytics -->
+  <div id="sleep" class="container">
+    <div class="card">
+      <h2>📊 Sleep Analytics</h2>
+      <canvas id="sleepChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Alarm -->
+  <div id="alarm" class="container">
+    <div class="card">
+      <h2>⏰ Manage Alarm</h2>
+      <input type="time" id="alarmTime" value="07:00">
       <button onclick="saveAlarm()">Save Alarm</button>
     </div>
+  </div>
 
-    <div class="section">
-      <h2>📊 Sleep Data</h2>
-      <canvas id="sleepChart" height="200"></canvas>
-    </div>
-
-    <div class="section">
-      <h2>💡 Light Levels</h2>
-      <canvas id="lightChart" height="200"></canvas>
-    </div>
-
-    <div class="section">
+  <!-- Games -->
+  <div id="games" class="container">
+    <div class="card">
       <h2>🎮 Games & Tools</h2>
       <button onclick="alert('Red Light Green Light Starting...')">Play Red Light Green Light</button>
       <button onclick="alert('Mindfulness Mode Activated')">Start Mindfulness Mode</button>
     </div>
+  </div>
 
-    <div class="section">
+  <!-- Settings -->
+  <div id="settings" class="container">
+    <div class="card">
       <h2>⚙ Settings</h2>
-      <button onclick="toggleLogin()">🔐 Enable Login</button>
+      <button onclick="toggleDarkMode()">🌙 Toggle Dark Mode</button>
     </div>
   </div>
 
   <script>
-    // On page load, decide which screen to show
-    window.addEventListener('load', () => {
-      if (localStorage.getItem('loginEnabled') === 'true') {
-        document.getElementById('loginScreen').classList.add('active');
-      } else {
-        document.getElementById('dashboardScreen').classList.add('active');
-        renderCharts();
-      }
-    });
-
-    // Login Function
-    function login() {
-      const user = document.getElementById('username').value;
-      const pass = document.getElementById('password').value;
-      if(user === 'admin' && pass === '1234') {
-        document.getElementById('loginScreen').classList.remove('active');
-        document.getElementById('dashboardScreen').classList.add('active');
-        renderCharts();
-      } else {
-        alert('Invalid credentials');
-      }
+    function showPage(pageId) {
+      document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
     }
 
-    // Toggle Login Feature
-    function toggleLogin() {
-      const loginEnabled = localStorage.getItem('loginEnabled') === 'true';
-      localStorage.setItem('loginEnabled', !loginEnabled);
-      alert('Login ' + (!loginEnabled ? 'Enabled' : 'Disabled') + '. Reload page to apply.');
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
     }
 
-    // Save Alarm
     function saveAlarm() {
       const time = document.getElementById('alarmTime').value;
       alert('Alarm set for ' + time);
     }
 
-    // Render Charts
-    function renderCharts() {
-      const sleepCtx = document.getElementById('sleepChart').getContext('2d');
-      new Chart(sleepCtx, {
+    window.addEventListener('load', () => {
+      const ctx = document.getElementById('sleepChart').getContext('2d');
+      new Chart(ctx, {
         type: 'line',
         data: {
           labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
           datasets: [{
             label: 'Hours Slept',
-            data: [6, 7.5, 5, 8, 6.5, 7, 8],
+            data: [6, 7, 5, 8, 6, 7.5, 8],
             borderColor: '#007aff',
             backgroundColor: 'rgba(0,122,255,0.2)',
             fill: true
           }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: true }
+          }
         }
       });
-
-      const lightCtx = document.getElementById('lightChart').getContext('2d');
-      new Chart(lightCtx, {
-        type: 'bar',
-        data: {
-          labels: ['6AM', '9AM', '12PM', '3PM', '6PM', '9PM'],
-          datasets: [{
-            label: 'Light Intensity (LDR)',
-            data: [20, 60, 90, 70, 40, 10],
-            backgroundColor: '#ffd700'
-          }]
-        }
-      });
-    }
+    });
   </script>
 </body>
 </html>
