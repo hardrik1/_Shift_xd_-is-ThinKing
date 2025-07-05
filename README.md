@@ -43,7 +43,8 @@ This project is a premium, feature-rich web dashboard for an ESP32-based Smart A
 - Start/stop mindfulness mode.
 - Play interactive motion-based games.
 - View sleep analytics in real-time.
-
+## Screenshots
+![screnshot](https://raw.githubusercontent.com/hardrik1/_Shift_xd_-is-ThinKing/refs/heads/Full-Codes-(-aka-Main)/My%20Imagination.jpg)
 ## 📜 License
 MIT License. Built with ❤️ by _shift_xd_ (Hardrik).
 
